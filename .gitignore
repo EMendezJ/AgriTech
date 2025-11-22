@@ -1,0 +1,14 @@
+# Ignorar carpetas de compilación de ROS 2
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Ignorar archivos temporales de Python y C++
+__pycache__/
+*.py[cod]
+*.so
+*.o
+
+# Ignorar configuraciones de IDE (opcional)
+.vscode/
+.idea/
