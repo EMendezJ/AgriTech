@@ -1,0 +1,6 @@
+[submodule "ros2_ws/puzzlebot_ros"]
+	path = ros2_ws/puzzlebot_ros
+	url = https://github.com/ManchesterRoboticsLtd/puzzlebot_ros.git
+[submodule "ros2_ws/src/gscam2"]
+	path = ros2_ws/src/gscam2
+	url = https://github.com/clydemcqueen/gscam2.git
