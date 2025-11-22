@@ -4,3 +4,6 @@
 [submodule "ros2_ws/src/gscam2"]
 	path = ros2_ws/src/gscam2
 	url = https://github.com/clydemcqueen/gscam2.git
+[submodule "AgritechAPI"]
+	path = AgritechAPI
+	url = https://github.com/dafogo/AgritechAPI.git
