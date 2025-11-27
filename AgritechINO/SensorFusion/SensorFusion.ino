@@ -61,7 +61,7 @@
 #define TRIG_PIN 16
 #define ECHO_PIN 17
 #define SERVO_PIN 18
-#define BOMBA_PIN 19  // Changed from GPIO 0 (bootstrap pin) to GPIO 19
+#define BOMBA_PIN 23  // Changed from GPIO 0 (bootstrap pin) to GPIO 23
 
 // Timing Configuration
 #define IMU_PUBLISH_RATE_HZ 125
