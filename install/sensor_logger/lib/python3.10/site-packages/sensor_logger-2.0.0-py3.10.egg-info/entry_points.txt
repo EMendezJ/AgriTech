@@ -1,0 +1,5 @@
+[console_scripts]
+mission = sensor_logger.mission_controller:main
+sensor_logger = sensor_logger.sensor_logger_node:main
+watering = sensor_logger.watering_node:main
+

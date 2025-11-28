@@ -69,7 +69,7 @@ class ColorDetectorROS2(Node):
         self.check_pub = self.create_publisher(Bool, "/plant_checked", 10)
         self.cut_pub = self.create_publisher(Bool, "/cut_plant", 10)
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
-        self.servo_pub = self.create_publisher(Int32, "/servo_angle", 10)
+        self.servo_pub = self.create_publisher(Int32, "/actuators/servo", 10)
         self.status_pub = self.create_publisher(String, "/agritech/harvest_status", 10)
 
         # ==================== TIMERS ====================

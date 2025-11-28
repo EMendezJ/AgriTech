@@ -1,0 +1,548 @@
+[0.097s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--packages-select', 'sensor_logger']
+[0.097s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=24, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['sensor_logger'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x78d1931f61d0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x78d1931f5780>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x78d1931f5780>>, mixin_verb=('build',))
+[0.218s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.218s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.218s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.218s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.218s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.218s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.218s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/emendezj/AgriTech'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.218s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extensions ['ignore', 'ignore_ament_install']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'ignore'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'ignore_ament_install'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extensions ['colcon_pkg']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'colcon_pkg'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extensions ['colcon_meta']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'colcon_meta'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extensions ['ros']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'ros'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extensions ['cmake', 'python']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'cmake'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'python'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extensions ['python_setup_py']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI) by extension 'python_setup_py'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extensions ['ignore', 'ignore_ament_install']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'ignore'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'ignore_ament_install'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extensions ['colcon_pkg']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'colcon_pkg'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extensions ['colcon_meta']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'colcon_meta'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extensions ['ros']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'ros'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extensions ['cmake', 'python']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'cmake'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'python'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extensions ['python_setup_py']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores) by extension 'python_setup_py'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extensions ['ignore', 'ignore_ament_install']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'ignore'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'ignore_ament_install'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extensions ['colcon_pkg']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'colcon_pkg'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extensions ['colcon_meta']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'colcon_meta'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extensions ['ros']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'ros'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extensions ['cmake', 'python']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'cmake'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'python'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extensions ['python_setup_py']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Controllers) by extension 'python_setup_py'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extensions ['ignore', 'ignore_ament_install']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'ignore'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'ignore_ament_install'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extensions ['colcon_pkg']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'colcon_pkg'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extensions ['colcon_meta']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'colcon_meta'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extensions ['ros']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'ros'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extensions ['cmake', 'python']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'cmake'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'python'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extensions ['python_setup_py']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Model) by extension 'python_setup_py'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extensions ['ignore', 'ignore_ament_install']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'ignore'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'ignore_ament_install'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extensions ['colcon_pkg']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'colcon_pkg'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extensions ['colcon_meta']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'colcon_meta'
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extensions ['ros']
+[0.225s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'ros'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extensions ['cmake', 'python']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'cmake'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'python'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extensions ['python_setup_py']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/Properties) by extension 'python_setup_py'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extensions ['ignore', 'ignore_ament_install']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'ignore'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'ignore_ament_install'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extensions ['colcon_pkg']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'colcon_pkg'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extensions ['colcon_meta']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'colcon_meta'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extensions ['ros']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'ros'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extensions ['cmake', 'python']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'cmake'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'python'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extensions ['python_setup_py']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin) by extension 'python_setup_py'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extensions ['ignore', 'ignore_ament_install']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'ignore'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'ignore_ament_install'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extensions ['colcon_pkg']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'colcon_pkg'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extensions ['colcon_meta']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'colcon_meta'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extensions ['ros']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'ros'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extensions ['cmake', 'python']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'cmake'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'python'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extensions ['python_setup_py']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug) by extension 'python_setup_py'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extensions ['ignore', 'ignore_ament_install']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'ignore'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'ignore_ament_install'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extensions ['colcon_pkg']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'colcon_pkg'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extensions ['colcon_meta']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'colcon_meta'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extensions ['ros']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'ros'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extensions ['cmake', 'python']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'cmake'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'python'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extensions ['python_setup_py']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0) by extension 'python_setup_py'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extensions ['ignore', 'ignore_ament_install']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'ignore'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'ignore_ament_install'
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extensions ['colcon_pkg']
+[0.226s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'colcon_pkg'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extensions ['colcon_meta']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'colcon_meta'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extensions ['ros']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'ros'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extensions ['cmake', 'python']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'cmake'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'python'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extensions ['python_setup_py']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes) by extension 'python_setup_py'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extensions ['ignore', 'ignore_ament_install']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'ignore'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'ignore_ament_install'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extensions ['colcon_pkg']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'colcon_pkg'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extensions ['colcon_meta']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'colcon_meta'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extensions ['ros']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'ros'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extensions ['cmake', 'python']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'cmake'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'python'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extensions ['python_setup_py']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win) by extension 'python_setup_py'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extensions ['ignore', 'ignore_ament_install']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'ignore'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'ignore_ament_install'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extensions ['colcon_pkg']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'colcon_pkg'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extensions ['colcon_meta']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'colcon_meta'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extensions ['ros']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'ros'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extensions ['cmake', 'python']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'cmake'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'python'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extensions ['python_setup_py']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib) by extension 'python_setup_py'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extensions ['ignore', 'ignore_ament_install']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'ignore'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'ignore_ament_install'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extensions ['colcon_pkg']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'colcon_pkg'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extensions ['colcon_meta']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'colcon_meta'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extensions ['ros']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'ros'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extensions ['cmake', 'python']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'cmake'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'python'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extensions ['python_setup_py']
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win/lib/net8.0) by extension 'python_setup_py'
+[0.227s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extensions ['ignore', 'ignore_ament_install']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'ignore'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'ignore_ament_install'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extensions ['colcon_pkg']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'colcon_pkg'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extensions ['colcon_meta']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'colcon_meta'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extensions ['ros']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'ros'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extensions ['cmake', 'python']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'cmake'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'python'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extensions ['python_setup_py']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64) by extension 'python_setup_py'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extensions ['ignore', 'ignore_ament_install']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'ignore'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'ignore_ament_install'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extensions ['colcon_pkg']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'colcon_pkg'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extensions ['colcon_meta']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'colcon_meta'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extensions ['ros']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'ros'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extensions ['cmake', 'python']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'cmake'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'python'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extensions ['python_setup_py']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/bin/Debug/net9.0/runtimes/win-x64/native) by extension 'python_setup_py'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extensions ['ignore', 'ignore_ament_install']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'ignore'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'ignore_ament_install'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extensions ['colcon_pkg']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'colcon_pkg'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extensions ['colcon_meta']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'colcon_meta'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extensions ['ros']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'ros'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extensions ['cmake', 'python']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'cmake'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'python'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extensions ['python_setup_py']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj) by extension 'python_setup_py'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extensions ['ignore', 'ignore_ament_install']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'ignore'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'ignore_ament_install'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extensions ['colcon_pkg']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'colcon_pkg'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extensions ['colcon_meta']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'colcon_meta'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extensions ['ros']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'ros'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extensions ['cmake', 'python']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'cmake'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'python'
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extensions ['python_setup_py']
+[0.228s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug) by extension 'python_setup_py'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extensions ['ignore', 'ignore_ament_install']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'ignore'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'ignore_ament_install'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extensions ['colcon_pkg']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'colcon_pkg'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extensions ['colcon_meta']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'colcon_meta'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extensions ['ros']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'ros'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extensions ['cmake', 'python']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'cmake'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'python'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extensions ['python_setup_py']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0) by extension 'python_setup_py'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extensions ['ignore', 'ignore_ament_install']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'ignore'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'ignore_ament_install'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extensions ['colcon_pkg']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'colcon_pkg'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extensions ['colcon_meta']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'colcon_meta'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extensions ['ros']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'ros'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extensions ['cmake', 'python']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'cmake'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'python'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extensions ['python_setup_py']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/ref) by extension 'python_setup_py'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extensions ['ignore', 'ignore_ament_install']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'ignore'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'ignore_ament_install'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extensions ['colcon_pkg']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'colcon_pkg'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extensions ['colcon_meta']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'colcon_meta'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extensions ['ros']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'ros'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extensions ['cmake', 'python']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'cmake'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'python'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extensions ['python_setup_py']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/refint) by extension 'python_setup_py'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extensions ['ignore', 'ignore_ament_install']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'ignore'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'ignore_ament_install'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extensions ['colcon_pkg']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'colcon_pkg'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extensions ['colcon_meta']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'colcon_meta'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extensions ['ros']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'ros'
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extensions ['cmake', 'python']
+[0.229s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'cmake'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'python'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extensions ['python_setup_py']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechAPI/APISensores/obj/Debug/net9.0/staticwebassets) by extension 'python_setup_py'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'ignore'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'ignore_ament_install'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extensions ['colcon_pkg']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'colcon_pkg'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extensions ['colcon_meta']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'colcon_meta'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extensions ['ros']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'ros'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extensions ['cmake', 'python']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'cmake'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'python'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extensions ['python_setup_py']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO) by extension 'python_setup_py'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'ignore'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'ignore_ament_install'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extensions ['colcon_pkg']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'colcon_pkg'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extensions ['colcon_meta']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'colcon_meta'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extensions ['ros']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'ros'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extensions ['cmake', 'python']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'cmake'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'python'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extensions ['python_setup_py']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/ESP32ROS2) by extension 'python_setup_py'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'ignore'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'ignore_ament_install'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extensions ['colcon_pkg']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'colcon_pkg'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extensions ['colcon_meta']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'colcon_meta'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extensions ['ros']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'ros'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extensions ['cmake', 'python']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'cmake'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'python'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extensions ['python_setup_py']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(AgritechINO/SensorFusion) by extension 'python_setup_py'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.230s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'ignore_ament_install'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extensions ['colcon_pkg']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'colcon_pkg'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extensions ['colcon_meta']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'colcon_meta'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extensions ['ros']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'ros'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extensions ['cmake', 'python']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'cmake'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'python'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extensions ['python_setup_py']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws) by extension 'python_setup_py'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/build) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/build) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/build) ignored
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'ignore_ament_install'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extensions ['colcon_pkg']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'colcon_pkg'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extensions ['colcon_meta']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'colcon_meta'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extensions ['ros']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'ros'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extensions ['cmake', 'python']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'cmake'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'python'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extensions ['python_setup_py']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/color_detector) by extension 'python_setup_py'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/install) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/install) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/install) ignored
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/log) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/log) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/log) ignored
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extensions ['ignore', 'ignore_ament_install']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extension 'ignore'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extension 'ignore_ament_install'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extensions ['colcon_pkg']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extension 'colcon_pkg'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extensions ['colcon_meta']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extension 'colcon_meta'
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extensions ['ros']
+[0.231s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_linefollower) by extension 'ros'
+[0.233s] DEBUG:colcon.colcon_core.package_identification:Package 'ros2_ws/puzzlebot_linefollower' with type 'ros.ament_python' and name 'puzzlebot_linefollower'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extensions ['ignore', 'ignore_ament_install']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extension 'ignore'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extension 'ignore_ament_install'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extensions ['colcon_pkg']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extension 'colcon_pkg'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extensions ['colcon_meta']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extension 'colcon_meta'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extensions ['ros']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/puzzlebot_ros) by extension 'ros'
+[0.233s] DEBUG:colcon.colcon_core.package_identification:Package 'ros2_ws/puzzlebot_ros' with type 'ros.ament_python' and name 'puzzlebot_ros'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extensions ['ignore', 'ignore_ament_install']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'ignore'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'ignore_ament_install'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extensions ['colcon_pkg']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'colcon_pkg'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extensions ['colcon_meta']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'colcon_meta'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extensions ['ros']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'ros'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extensions ['cmake', 'python']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'cmake'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'python'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extensions ['python_setup_py']
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src) by extension 'python_setup_py'
+[0.233s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extensions ['ignore', 'ignore_ament_install']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extension 'ignore'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extension 'ignore_ament_install'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extensions ['colcon_pkg']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extension 'colcon_pkg'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extensions ['colcon_meta']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extension 'colcon_meta'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extensions ['ros']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/gscam2) by extension 'ros'
+[0.234s] DEBUG:colcon.colcon_core.package_identification:Package 'ros2_ws/src/gscam2' with type 'ros.ament_cmake' and name 'gscam2'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extensions ['ignore', 'ignore_ament_install']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'ignore'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'ignore_ament_install'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extensions ['colcon_pkg']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'colcon_pkg'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extensions ['colcon_meta']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'colcon_meta'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extensions ['ros']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'ros'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extensions ['cmake', 'python']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'cmake'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'python'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extensions ['python_setup_py']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower) by extension 'python_setup_py'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extensions ['ignore', 'ignore_ament_install']
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'ignore'
+[0.234s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'ignore_ament_install'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extensions ['colcon_pkg']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'colcon_pkg'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extensions ['colcon_meta']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'colcon_meta'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extensions ['ros']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'ros'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extensions ['cmake', 'python']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'cmake'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'python'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extensions ['python_setup_py']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/puzzlebot_linefollower/resource) by extension 'python_setup_py'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extensions ['ignore', 'ignore_ament_install']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extension 'ignore'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extension 'ignore_ament_install'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extensions ['colcon_pkg']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extension 'colcon_pkg'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extensions ['colcon_meta']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extension 'colcon_meta'
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extensions ['ros']
+[0.235s] Level 1:colcon.colcon_core.package_identification:_identify(ros2_ws/src/sensor_logger) by extension 'ros'
+[0.235s] DEBUG:colcon.colcon_core.package_identification:Package 'ros2_ws/src/sensor_logger' with type 'ros.ament_python' and name 'sensor_logger'
+[0.235s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.235s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.235s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.235s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.235s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.253s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'gscam2' in 'ros2_ws/src/gscam2'
+[0.253s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'puzzlebot_linefollower' in 'ros2_ws/puzzlebot_linefollower'
+[0.253s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'puzzlebot_ros' in 'ros2_ws/puzzlebot_ros'
+[0.253s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.253s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.257s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 1 installed packages in /home/emendezj/AgriTech/ros2_ws/install
+[0.260s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 346 installed packages in /home/emendezj/ros2_humble/install
+[0.262s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 243 installed packages in /opt/ros/humble
+[0.264s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'cmake_args' from command line to 'None'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'cmake_target' from command line to 'None'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'cmake_clean_cache' from command line to 'False'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'cmake_clean_first' from command line to 'False'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'cmake_force_configure' from command line to 'False'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'ament_cmake_args' from command line to 'None'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'catkin_cmake_args' from command line to 'None'
+[0.283s] Level 5:colcon.colcon_core.verb:set package 'sensor_logger' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.283s] DEBUG:colcon.colcon_core.verb:Building package 'sensor_logger' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/emendezj/AgriTech/build/sensor_logger', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/emendezj/AgriTech/install/sensor_logger', 'merge_install': False, 'path': '/home/emendezj/AgriTech/ros2_ws/src/sensor_logger', 'symlink_install': False, 'test_result_base': None}
+[0.283s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.284s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.284s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/emendezj/AgriTech/ros2_ws/src/sensor_logger' with build type 'ament_python'
+[0.284s] Level 1:colcon.colcon_core.shell:create_environment_hook('sensor_logger', 'ament_prefix_path')
+[0.286s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.286s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/hook/ament_prefix_path.ps1'
+[0.287s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/hook/ament_prefix_path.dsv'
+[0.287s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/hook/ament_prefix_path.sh'
+[0.287s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.287s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.513s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/emendezj/AgriTech/ros2_ws/src/sensor_logger'
+[0.514s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.514s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.867s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/emendezj/AgriTech/ros2_ws/src/sensor_logger': PYTHONPATH=/home/emendezj/AgriTech/build/sensor_logger/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/emendezj/AgriTech/install/sensor_logger/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/sensor_logger build --build-base /home/emendezj/AgriTech/build/sensor_logger/build install --record /home/emendezj/AgriTech/build/sensor_logger/install.log --single-version-externally-managed install_data
+[1.115s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/emendezj/AgriTech/ros2_ws/src/sensor_logger' returned '0': PYTHONPATH=/home/emendezj/AgriTech/build/sensor_logger/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/emendezj/AgriTech/install/sensor_logger/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/sensor_logger build --build-base /home/emendezj/AgriTech/build/sensor_logger/build install --record /home/emendezj/AgriTech/build/sensor_logger/install.log --single-version-externally-managed install_data
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger' for CMake module files
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger' for CMake config files
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger/lib'
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger/bin'
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger/lib/pkgconfig/sensor_logger.pc'
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger/lib/python3.10/site-packages'
+[1.118s] Level 1:colcon.colcon_core.shell:create_environment_hook('sensor_logger', 'pythonpath')
+[1.118s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/hook/pythonpath.ps1'
+[1.119s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/hook/pythonpath.dsv'
+[1.119s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/hook/pythonpath.sh'
+[1.119s] Level 1:colcon.colcon_core.environment:checking '/home/emendezj/AgriTech/install/sensor_logger/bin'
+[1.119s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(sensor_logger)
+[1.119s] INFO:colcon.colcon_core.shell:Creating package script '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/package.ps1'
+[1.120s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/package.dsv'
+[1.120s] INFO:colcon.colcon_core.shell:Creating package script '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/package.sh'
+[1.120s] INFO:colcon.colcon_core.shell:Creating package script '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/package.bash'
+[1.120s] INFO:colcon.colcon_core.shell:Creating package script '/home/emendezj/AgriTech/install/sensor_logger/share/sensor_logger/package.zsh'
+[1.120s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/emendezj/AgriTech/install/sensor_logger/share/colcon-core/packages/sensor_logger)
+[1.121s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.121s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.121s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[1.121s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.125s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.125s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.125s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.132s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.132s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/emendezj/AgriTech/install/local_setup.ps1'
+[1.133s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/emendezj/AgriTech/install/_local_setup_util_ps1.py'
+[1.133s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/emendezj/AgriTech/install/setup.ps1'
+[1.137s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/emendezj/AgriTech/install/local_setup.sh'
+[1.137s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/emendezj/AgriTech/install/_local_setup_util_sh.py'
+[1.137s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/emendezj/AgriTech/install/setup.sh'
+[1.141s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/emendezj/AgriTech/install/local_setup.bash'
+[1.141s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/emendezj/AgriTech/install/setup.bash'
+[1.144s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/emendezj/AgriTech/install/local_setup.zsh'
+[1.144s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/emendezj/AgriTech/install/setup.zsh'
