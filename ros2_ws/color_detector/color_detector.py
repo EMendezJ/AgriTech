@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import rclpy
 from rclpy.node import Node
 import cv2
@@ -7,20 +5,20 @@ import numpy as np
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from std_msgs.msg import Bool, Int32, String
+from geometry_msgs.msg import Twist
 
 class ColorDetectorROS2(Node):
     def __init__(self):
         super().__init__("color_detector")
 
-        # Parametros de configuracion para filtro de color y area
-        self.declare_parameter('h_lower', 40)
+        self.declare_parameter('h_lower', 0)
         self.declare_parameter('s_lower', 100)
-        self.declare_parameter('v_lower', 80)
-        self.declare_parameter('h_upper', 80)
+        self.declare_parameter('v_lower', 100)
+        self.declare_parameter('h_upper', 10)
         self.declare_parameter('s_upper', 255)
         self.declare_parameter('v_upper', 255)
         self.declare_parameter('min_area', 500)
-        self.declare_parameter('plant_name', 'Fondowny')
+        self.declare_parameter('plant_name', 'Planta_1')
 
         self.H_LOWER = self.get_parameter('h_lower').value
         self.S_LOWER = self.get_parameter('s_lower').value
@@ -31,17 +29,16 @@ class ColorDetectorROS2(Node):
         self.MIN_CONTOUR_AREA = self.get_parameter('min_area').value
         self.plant_name = self.get_parameter('plant_name').value
 
-        # Variables internas
         self.planta_ya_fue_cortada = False
         self.ROI_SIZE = 200
         self.frame_count = 0
         self.bridge = CvBridge()
+        self.last_hsv_publish_time = self.get_clock().now()
 
-        # Suscriptores y Publicadores
         self.image_sub = self.create_subscription(
-            Image, 
-            "/video_source/raw", 
-            self.image_callback, 
+            Image,
+            "/video_source/raw",
+            self.image_callback,
             10
         )
 
@@ -51,20 +48,30 @@ class ColorDetectorROS2(Node):
         self.cut_pub = self.create_publisher(Bool, "cut_plant", 10)
         self.name_pub = self.create_publisher(String, "plant_name", 10)
 
-        # Timers de control
+        self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+
+        self.forward_twist = Twist()
+        self.forward_twist.linear.x = 0.01
+
+        self.movement_timer = self.create_timer(0.1, self.publish_forward_velocity)
+
         self.create_timer(5.0, self.check_video_stream)
         self.create_timer(2.0, self.sync_plant_name)
 
-        self.get_logger().info(f"Nodo iniciado. Planta objetivo: {self.plant_name}")
+    def publish_forward_velocity(self):
+        if not self.planta_ya_fue_cortada:
+            self.cmd_pub.publish(self.forward_twist)
+
+    def stop_robot(self):
+        stop = Twist()
+        self.cmd_pub.publish(stop)
 
     def sync_plant_name(self):
-        """Publica periodicamente el nombre de la planta para sincronizacion con ESP32."""
         msg = String()
         msg.data = self.plant_name
         self.name_pub.publish(msg)
 
     def check_video_stream(self):
-        """Verifica la recepcion de flujo de video."""
         if self.frame_count == 0:
             self.get_logger().warn("No se detecta flujo de video en /video_source/raw")
 
@@ -77,8 +84,7 @@ class ColorDetectorROS2(Node):
 
     def process_image(self, cv_image):
         self.frame_count += 1
-        
-        # Definicion de ROI central
+
         (h, w) = cv_image.shape[:2]
         half_roi = self.ROI_SIZE // 2
         x1 = max(0, (w // 2) - half_roi)
@@ -86,47 +92,57 @@ class ColorDetectorROS2(Node):
         x2 = min(w, (w // 2) + half_roi)
         y2 = min(h, (h // 2) + half_roi)
 
-        # Procesamiento HSV
         hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
         lower_bound = np.array([self.H_LOWER, self.S_LOWER, self.V_LOWER])
         upper_bound = np.array([self.H_UPPER, self.S_UPPER, self.V_UPPER])
-        
+
         mask = cv2.inRange(hsv_image, lower_bound, upper_bound)
         mask = cv2.erode(mask, None, iterations=2)
         mask = cv2.dilate(mask, None, iterations=2)
 
-        # Calculo y publicacion de valores promedio en ROI
-        roi_hsv = hsv_image[y1:y2, x1:x2]
-        if roi_hsv.size != 0:
-            mean = cv2.mean(roi_hsv)
-            
-            h_msg = Int32()
-            h_msg.data = int(mean[0])
-            self.h_pub.publish(h_msg)
-
-            s_msg = Int32()
-            s_msg.data = int(mean[1])
-            self.s_pub.publish(s_msg)
-
-            v_msg = Int32()
-            v_msg.data = int(mean[2])
-            self.v_pub.publish(v_msg)
-
-        # Deteccion de contornos para accion de corte
         contours, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        if contours and not self.planta_ya_fue_cortada:
-            largest = max(contours, key=cv2.contourArea)
-            area = cv2.contourArea(largest)
+        target_detected = False
+        largest_contour = None
 
-            if area > self.MIN_CONTOUR_AREA:
-                self.get_logger().info(f"Objetivo detectado (Area: {area:.0f}). Enviando senal de corte.")
-                
-                self.planta_ya_fue_cortada = True
-                
-                cut_msg = Bool()
-                cut_msg.data = True
-                self.cut_pub.publish(cut_msg)
+        if contours:
+            largest_contour = max(contours, key=cv2.contourArea)
+            if cv2.contourArea(largest_contour) > self.MIN_CONTOUR_AREA:
+                target_detected = True
+
+        current_time = self.get_clock().now()
+        time_diff = (current_time - self.last_hsv_publish_time).nanoseconds / 1e9
+
+        if time_diff >= 15.0 or target_detected:
+            roi_hsv = hsv_image[y1:y2, x1:x2]
+            if roi_hsv.size != 0:
+                mean = cv2.mean(roi_hsv)
+                h_msg = Int32()
+                h_msg.data = int(mean[0])
+                self.h_pub.publish(h_msg)
+                s_msg = Int32()
+                s_msg.data = int(mean[1])
+                self.s_pub.publish(s_msg)
+                v_msg = Int32()
+                v_msg.data = int(mean[2])
+                self.v_pub.publish(v_msg)
+                self.last_hsv_publish_time = current_time
+
+        if target_detected and not self.planta_ya_fue_cortada:
+            self.planta_ya_fue_cortada = True
+
+            backward = Twist()
+            backward.linear.x = -0.005
+            self.cmd_pub.publish(backward)
+
+            stop = Twist()
+            self.cmd_pub.publish(stop)
+
+            cut_msg = Bool()
+            cut_msg.data = True
+            self.cut_pub.publish(cut_msg)
+
+            self.movement_timer.cancel()
 
 def main(args=None):
     rclpy.init(args=args)
@@ -141,3 +157,4 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
+

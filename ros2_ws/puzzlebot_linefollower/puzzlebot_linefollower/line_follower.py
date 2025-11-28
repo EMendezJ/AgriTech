@@ -20,9 +20,9 @@ class LineFollower(Node):
 
         # Parameters you can tune
         self.publish_rate = 10        # Hz
-        self.max_speed = 0.04         # m/s (safe speed)
-        self.max_turn = 0.3           # rad/s
-        self.accel_limit = 0.01       # maximum change per step
+        self.max_speed = 0.05         # m/s (safe speed)
+        self.max_turn = 0.05           # rad/s
+        self.accel_limit = 0.05       # maximum change per step
 
         # Subscribe to camera
         self.create_subscription(
