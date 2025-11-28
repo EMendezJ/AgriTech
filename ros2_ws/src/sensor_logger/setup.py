@@ -4,7 +4,7 @@ package_name = 'sensor_logger'
 
 setup(
     name=package_name,
-    version='0.0.0',
+    version='1.0.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -14,12 +14,12 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='emendezj',
-    maintainer_email='emeji2005@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
-    tests_require=['pytest'],
+    maintainer_email='emendezj@agritech.com',
+    description='AgriTech ROS2 to API bridge',
+    license='MIT',
     entry_points={
         'console_scripts': [
+            'sensor_logger = sensor_logger.sensor_logger_node:main',
         ],
     },
 )
