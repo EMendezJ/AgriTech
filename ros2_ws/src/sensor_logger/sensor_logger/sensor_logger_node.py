@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
-# filepath: /home/emendezj/AgriTech/ros2_ws/src/sensor_logger/sensor_logger/sensor_logger_node.py
 """
-AgriTech Sensor Logger Node - Background Service
+AgriTech Sensor Logger Node v2.7
+================================
+- Detección de movimiento mejorada
+- Umbral adaptativo
+- Posiciones X,Y
+- Consumo de tanque
+- Color HSV cuando se corta planta
 """
 
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-from sensor_msgs.msg import Imu, Image
-from std_msgs.msg import Float32, String
-from cv_bridge import CvBridge
-import cv2
+from sensor_msgs.msg import Imu
+from std_msgs.msg import Float32, String, Bool, Int32
 import requests
 from datetime import datetime
 from enum import Enum
 import threading
-import math
+from queue import Queue
+import time
 
 
 class TrajectoryState(Enum):
@@ -31,26 +35,33 @@ class SensorLoggerNode(Node):
         # ==================== PARAMETERS ====================
         self.declare_parameter('api_host', '172.20.10.2')
         self.declare_parameter('api_port', 5074)
-        self.declare_parameter('nombre_planta', 'Planta_1')
-        self.declare_parameter('movement_threshold', 0.15)
-        self.declare_parameter('stop_timeout', 2.0)
-        self.declare_parameter('position_publish_rate', 1.0)
-        self.declare_parameter('color_publish_rate', 2.0)
+        self.declare_parameter('start_threshold', 2.0)      # Para INICIAR trayectoria
+        self.declare_parameter('continue_threshold', 0.5)   # Para CONTINUAR moviéndose
+        self.declare_parameter('stop_timeout', 3.0)
+        self.declare_parameter('min_trajectory_duration', 2.0)
+        self.declare_parameter('api_timeout', 5.0)
+        self.declare_parameter('calibration_samples', 50)
+        self.declare_parameter('position_post_interval', 2.0)
 
         self.api_host = self.get_parameter('api_host').value
         self.api_port = self.get_parameter('api_port').value
-        self.nombre_planta = self.get_parameter('nombre_planta').value
-        self.movement_threshold = self.get_parameter('movement_threshold').value
+        self.start_threshold = self.get_parameter('start_threshold').value
+        self.continue_threshold = self.get_parameter('continue_threshold').value
         self.stop_timeout = self.get_parameter('stop_timeout').value
+        self.min_trajectory_duration = self.get_parameter('min_trajectory_duration').value
+        self.api_timeout = self.get_parameter('api_timeout').value
+        self.calibration_samples = self.get_parameter('calibration_samples').value
+        self.position_post_interval = self.get_parameter('position_post_interval').value
 
         self.base_url = f"http://{self.api_host}:{self.api_port}"
 
-        # ==================== CV BRIDGE ====================
-        self.bridge = CvBridge()
-
         # ==================== STATE ====================
         self.trajectory_state = TrajectoryState.IDLE
+        self.trajectory_confirmed = False
+        self.trajectory_start_time = None
         self.last_movement_time = None
+
+        # IMU Integration
         self.position_x = 0.0
         self.position_y = 0.0
         self.velocity_x = 0.0
@@ -58,259 +69,350 @@ class SensorLoggerNode(Node):
         self.last_imu_time = None
         self.accel_bias_x = 0.0
         self.accel_bias_y = 0.0
-        self.bias_alpha = 0.01
-        self.last_position_post = None
+        self.bias_samples = 0
+        self.bias_calibrated = False
+        self.last_position_post = 0.0
+
+        # Tank
         self.volume_at_trajectory_start = None
         self.current_volume = 0.0
-        self.current_hsv = None
-        self.last_color_post = None
+
+        # HSV and plant
+        self.current_hsv = {'H': 0, 'S': 0, 'V': 0}
+        self.nombre_planta = "Planta_Default"
+
+        # Control flags
+        self.shutting_down = False
+        self.api_available = True
         self.lock = threading.Lock()
 
-        # ==================== QoS ====================
-        qos_best_effort = QoSProfile(
+        # ==================== API QUEUE ====================
+        self.api_queue = Queue()
+        self.api_thread = threading.Thread(target=self._api_worker, daemon=True)
+        self.api_thread.start()
+
+        # ==================== QOS ====================
+        qos = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             history=HistoryPolicy.KEEP_LAST,
             depth=10
         )
 
         # ==================== SUBSCRIBERS ====================
-        self.imu_sub = self.create_subscription(
-            Imu, '/imu/data_raw', self.imu_callback, qos_best_effort)
-        self.volume_sub = self.create_subscription(
-            Float32, '/tank/volume', self.volume_callback, 10)
-        self.image_sub = self.create_subscription(
-            Image, '/image_raw', self.image_callback, 10)
+        self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, qos)
+        self.create_subscription(Float32, '/tank/volume', self.volume_callback, qos)
+        self.create_subscription(Int32, '/hsv_h', self.h_callback, 10)
+        self.create_subscription(Int32, '/hsv_s', self.s_callback, 10)
+        self.create_subscription(Int32, '/hsv_v', self.v_callback, 10)
+        self.create_subscription(String, '/plant_name', self.plant_name_callback, 10)
+        self.create_subscription(Bool, '/cut_plant', self.cut_callback, 10)
 
-        # ==================== PUBLISHERS ====================
+        # ==================== PUBLISHER ====================
         self.status_pub = self.create_publisher(String, '/agritech/status', 10)
 
-        # ==================== TIMER ====================
-        self.state_timer = self.create_timer(0.1, self.state_machine_tick)
+        # ==================== TIMERS ====================
+        self.create_timer(0.2, self.state_machine_tick)
+        self.create_timer(5.0, self._publish_status)
+        self.create_timer(30.0, self._check_api_health)
 
         self._log_startup()
 
+    # ==================== STARTUP ====================
+
     def _log_startup(self):
         self.get_logger().info("=" * 55)
-        self.get_logger().info("   AgriTech Sensor Logger")
+        self.get_logger().info("   📊 AgriTech Sensor Logger v2.7")
         self.get_logger().info("=" * 55)
         self.get_logger().info(f"API: {self.base_url}")
-        self.get_logger().info(f"Planta: {self.nombre_planta}")
-        self.get_logger().info("Waiting for sensor data...")
+        self.get_logger().info(f"Start threshold: {self.start_threshold} m/s²")
+        self.get_logger().info(f"Continue threshold: {self.continue_threshold} m/s²")
+        self.get_logger().info("Calibrating IMU (keep robot still)...")
+
+    def _check_api_health(self):
+        try:
+            requests.get(f"{self.base_url}/Sensores/GetTrajectory", timeout=2.0)
+            if not self.api_available:
+                self.get_logger().info("✅ API restored")
+            self.api_available = True
+        except:
+            if self.api_available:
+                self.get_logger().warn("⚠️ API not reachable")
+            self.api_available = False
 
     # ==================== IMU CALLBACK ====================
-    def imu_callback(self, msg: Imu):
-        current_time = self.get_clock().now()
-        now_sec = current_time.nanoseconds / 1e9
 
+    def imu_callback(self, msg: Imu):
+        now_sec = time.time()
         ax = msg.linear_acceleration.x
         ay = msg.linear_acceleration.y
 
-        self.accel_bias_x = self.accel_bias_x * (1 - self.bias_alpha) + ax * self.bias_alpha
-        self.accel_bias_y = self.accel_bias_y * (1 - self.bias_alpha) + ay * self.bias_alpha
-
-        ax_corrected = ax - self.accel_bias_x
-        ay_corrected = ay - self.accel_bias_y
-
-        accel_magnitude = math.sqrt(ax_corrected**2 + ay_corrected**2)
-        is_moving = accel_magnitude > self.movement_threshold
-
-        with self.lock:
-            if is_moving:
-                self.last_movement_time = now_sec
-                if self.trajectory_state == TrajectoryState.IDLE:
-                    self._start_trajectory()
-                if self.trajectory_state == TrajectoryState.STOPPING:
-                    self.trajectory_state = TrajectoryState.MOVING
-
-            if self.trajectory_state == TrajectoryState.MOVING:
-                self._update_position(ax_corrected, ay_corrected, current_time)
-
-    def _update_position(self, ax, ay, current_time):
-        if self.last_imu_time is None:
-            self.last_imu_time = current_time
+        # Calibración rápida
+        if not self.bias_calibrated:
+            alpha = 0.1 if self.bias_samples < 20 else 0.05
+            self.accel_bias_x = self.accel_bias_x * (1 - alpha) + ax * alpha
+            self.accel_bias_y = self.accel_bias_y * (1 - alpha) + ay * alpha
+            self.bias_samples += 1
+            
+            if self.bias_samples >= self.calibration_samples:
+                self.bias_calibrated = True
+                self.get_logger().info(
+                    f"✅ IMU calibrated: bias=({self.accel_bias_x:.3f}, {self.accel_bias_y:.3f})"
+                )
             return
 
-        dt = (current_time - self.last_imu_time).nanoseconds / 1e9
-        self.last_imu_time = current_time
+        # Corregir con bias
+        ax_corrected = ax - self.accel_bias_x
+        ay_corrected = ay - self.accel_bias_y
+        
+        # Magnitud total de aceleración
+        accel_magnitude = (ax_corrected**2 + ay_corrected**2)**0.5
+
+        with self.lock:
+            current_state = self.trajectory_state
+            
+            if current_state == TrajectoryState.IDLE:
+                # Umbral ALTO para iniciar (evitar falsos positivos)
+                if accel_magnitude > self.start_threshold:
+                    self.get_logger().info(f"📍 Movement detected: {accel_magnitude:.2f} m/s²")
+                    self._start_trajectory()
+                    self.last_movement_time = now_sec
+                    
+            elif current_state in [TrajectoryState.MOVING, TrajectoryState.STOPPING]:
+                # Umbral BAJO para continuar (detectar movimiento suave)
+                if accel_magnitude > self.continue_threshold:
+                    self.last_movement_time = now_sec
+                    if current_state == TrajectoryState.STOPPING:
+                        self.trajectory_state = TrajectoryState.MOVING
+
+                # Actualizar posición si confirmado
+                if self.trajectory_confirmed:
+                    self._update_position(ax_corrected, ay_corrected, now_sec)
+
+    def _update_position(self, ax, ay, now_sec):
+        if self.last_imu_time is None:
+            self.last_imu_time = now_sec
+            return
+
+        dt = now_sec - self.last_imu_time
+        self.last_imu_time = now_sec
 
         if dt > 0.1 or dt < 0.001:
             return
 
-        if abs(ax) < 0.05:
+        # Dead zone
+        if abs(ax) < 0.15:
             ax = 0.0
-        if abs(ay) < 0.05:
+        if abs(ay) < 0.15:
             ay = 0.0
 
+        # Integrar
         self.velocity_x += ax * dt
         self.velocity_y += ay * dt
-        self.velocity_x *= 0.98
-        self.velocity_y *= 0.98
+
+        # Damping
+        self.velocity_x *= 0.95
+        self.velocity_y *= 0.95
+
         self.position_x += self.velocity_x * dt
         self.position_y += self.velocity_y * dt
 
-        now = datetime.now()
-        rate = self.get_parameter('position_publish_rate').value
-        if self.last_position_post is None or \
-           (now - self.last_position_post).total_seconds() >= (1.0 / rate):
+        # Postear periódicamente
+        if now_sec - self.last_position_post >= self.position_post_interval:
             self._post_position()
-            self.last_position_post = now
+            self.last_position_post = now_sec
 
-    # ==================== VOLUME CALLBACK ====================
+    def _post_position(self):
+        if not self.trajectory_confirmed:
+            return
+
+        x_cm = round(self.position_x * 100, 2)
+        y_cm = round(self.position_y * 100, 2)
+
+        self._queue_api("/Sensores/PostPosition", {"X": x_cm, "Y": y_cm})
+
+    # ==================== SENSOR CALLBACKS ====================
+
     def volume_callback(self, msg: Float32):
         with self.lock:
             self.current_volume = msg.data
             if self.trajectory_state == TrajectoryState.MOVING and \
                self.volume_at_trajectory_start is None:
                 self.volume_at_trajectory_start = msg.data
-                self.get_logger().info(f"💧 Tank at start: {msg.data:.1f} ml")
+                self.get_logger().info(f"💧 Tank start: {msg.data:.0f} ml")
 
-    # ==================== IMAGE CALLBACK ====================
-    def image_callback(self, msg: Image):
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            height, width = cv_image.shape[:2]
+    def h_callback(self, msg: Int32):
+        with self.lock:
+            self.current_hsv['H'] = msg.data
 
-            roi_size = 100
-            cx, cy = width // 2, height // 2
-            x1, x2 = max(0, cx - roi_size), min(width, cx + roi_size)
-            y1, y2 = max(0, cy - roi_size), min(height, cy + roi_size)
+    def s_callback(self, msg: Int32):
+        with self.lock:
+            self.current_hsv['S'] = msg.data
 
-            roi = cv_image[y1:y2, x1:x2]
-            hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-            mean_hsv = cv2.mean(hsv_roi)[:3]
+    def v_callback(self, msg: Int32):
+        with self.lock:
+            self.current_hsv['V'] = msg.data
 
-            h, s, v = int(mean_hsv[0]), int(mean_hsv[1]), int(mean_hsv[2])
-            is_plant_color = (25 <= h <= 95) and (s > 40) and (v > 40)
+    def plant_name_callback(self, msg: String):
+        with self.lock:
+            self.nombre_planta = msg.data
 
-            if is_plant_color:
-                with self.lock:
-                    self.current_hsv = {'H': h, 'S': s, 'V': v}
-                    now = datetime.now()
-                    rate = self.get_parameter('color_publish_rate').value
-                    if self.last_color_post is None or \
-                       (now - self.last_color_post).total_seconds() >= (1.0 / rate):
-                        self._post_color()
-                        self.last_color_post = now
+    def cut_callback(self, msg: Bool):
+        if msg.data:
+            with self.lock:
+                hsv = self.current_hsv.copy()
+                nombre = self.nombre_planta
 
-        except Exception as e:
-            self.get_logger().error(f"Image error: {e}")
+            self._queue_api("/Sensores/color", {
+                "NombrePlanta": nombre,
+                "H": hsv['H'],
+                "S": hsv['S'],
+                "V": hsv['V'],
+                "FueCortada": True
+            })
+            self.get_logger().info(f"🔪 Cut: {nombre} HSV({hsv['H']},{hsv['S']},{hsv['V']})")
 
     # ==================== STATE MACHINE ====================
+
     def state_machine_tick(self):
-        now_sec = self.get_clock().now().nanoseconds / 1e9
+        if self.shutting_down:
+            return
+
+        now_sec = time.time()
 
         with self.lock:
             if self.trajectory_state == TrajectoryState.MOVING:
-                if self.last_movement_time is not None:
-                    if now_sec - self.last_movement_time > self.stop_timeout / 2:
-                        self.trajectory_state = TrajectoryState.STOPPING
-                        self.get_logger().info("⏸️  Slowing...")
+                time_since_movement = now_sec - self.last_movement_time if self.last_movement_time else 0
+                if time_since_movement > self.stop_timeout / 2:
+                    self.trajectory_state = TrajectoryState.STOPPING
+                    self.get_logger().info("⏸️ Slowing down...")
 
             elif self.trajectory_state == TrajectoryState.STOPPING:
-                if self.last_movement_time is not None:
-                    if now_sec - self.last_movement_time > self.stop_timeout:
-                        self._end_trajectory()
+                time_since_movement = now_sec - self.last_movement_time if self.last_movement_time else 0
+                if time_since_movement > self.stop_timeout:
+                    self._end_trajectory()
 
-        self._publish_status()
+    # ==================== TRAJECTORY MANAGEMENT ====================
 
-    # ==================== API CALLS ====================
     def _start_trajectory(self):
+        if not self.api_available:
+            self.get_logger().warn("API not available")
+            return
+
         self.trajectory_state = TrajectoryState.MOVING
+        self.trajectory_start_time = time.time()
         self.volume_at_trajectory_start = self.current_volume
         self.position_x = 0.0
         self.position_y = 0.0
         self.velocity_x = 0.0
         self.velocity_y = 0.0
         self.last_imu_time = None
+        self.last_position_post = time.time()
 
         try:
             response = requests.post(
                 f"{self.base_url}/Sensores/StartTrajectory",
                 json={},
-                headers={'Content-Type': 'application/json'},
-                timeout=2.0
+                timeout=self.api_timeout
             )
-            if response.status_code in [200, 201, 204]:
+            if response.status_code in [200, 201]:
+                self.trajectory_confirmed = True
                 self.get_logger().info("🚀 TRAJECTORY STARTED")
+            else:
+                self.get_logger().error(f"❌ StartTrajectory failed: {response.status_code}")
+                self.trajectory_state = TrajectoryState.IDLE
+                self.trajectory_confirmed = False
         except Exception as e:
-            self.get_logger().error(f"StartTrajectory error: {e}")
+            self.get_logger().error(f"❌ StartTrajectory error: {e}")
+            self.trajectory_state = TrajectoryState.IDLE
+            self.trajectory_confirmed = False
 
     def _end_trajectory(self):
-        try:
-            requests.post(
-                f"{self.base_url}/Sensores/CloseTrajectory",
-                json={},
-                headers={'Content-Type': 'application/json'},
-                timeout=2.0
-            )
-            self.get_logger().info("🏁 TRAJECTORY ENDED")
-        except Exception as e:
-            self.get_logger().error(f"CloseTrajectory error: {e}")
+        duration = time.time() - self.trajectory_start_time if self.trajectory_start_time else 0
 
-        self._post_tank_data()
+        if duration < self.min_trajectory_duration:
+            self.get_logger().info(f"⏭️ Too short ({duration:.1f}s), discarding")
+            self.trajectory_state = TrajectoryState.IDLE
+            self.trajectory_confirmed = False
+            return
+
+        if self.trajectory_confirmed:
+            self._queue_api("/Sensores/CloseTrajectory", {})
+            
+            x_cm = round(self.position_x * 100, 1)
+            y_cm = round(self.position_y * 100, 1)
+            self.get_logger().info(f"🏁 TRAJECTORY ENDED ({duration:.1f}s) Final:({x_cm},{y_cm})cm")
+
+            if self.volume_at_trajectory_start is not None and self.current_volume >= 0:
+                used = self.volume_at_trajectory_start - self.current_volume
+                if used > 0:
+                    self._queue_api("/Sensores/Tanque/MLPorDia", {
+                        "ML_Al_Inicio": self.volume_at_trajectory_start,
+                        "ML_Al_Final": self.current_volume
+                    })
+                    self.get_logger().info(f"💧 Used: {used:.0f} ml")
+
         self.trajectory_state = TrajectoryState.IDLE
+        self.trajectory_confirmed = False
         self.volume_at_trajectory_start = None
+        self.trajectory_start_time = None
 
-    def _post_position(self):
-        try:
-            payload = {
-                "X": round(self.position_x * 100, 2),
-                "Y": round(self.position_y * 100, 2)
-            }
-            requests.post(
-                f"{self.base_url}/Sensores/PostPosition",
-                json=payload,
-                headers={'Content-Type': 'application/json'},
-                timeout=1.0
-            )
-            self.get_logger().debug(f"📍 Pos: {payload}")
-        except:
-            pass
+    # ==================== API WORKER ====================
 
-    def _post_color(self):
-        if self.current_hsv is None:
-            return
-        try:
-            payload = {
-                "NombrePlanta": self.nombre_planta,
-                "H": self.current_hsv['H'],
-                "S": self.current_hsv['S'],
-                "V": self.current_hsv['V'],
-                "FueCortada": False
-            }
-            requests.post(
-                f"{self.base_url}/Sensores/color",
-                json=payload,
-                headers={'Content-Type': 'application/json'},
-                timeout=1.0
-            )
-            self.get_logger().info(f"🌱 Color: {payload}")
-        except Exception as e:
-            self.get_logger().warn(f"Color error: {e}")
+    def _api_worker(self):
+        while True:
+            task = self.api_queue.get()
+            if task is None:
+                break
 
-    def _post_tank_data(self):
-        if self.volume_at_trajectory_start is None:
-            return
-        try:
-            payload = {
-                "ML_Al_Inicio": int(round(self.volume_at_trajectory_start)),
-                "ML_Al_Final": int(round(self.current_volume))
-            }
-            requests.post(
-                f"{self.base_url}/Sensores/Tanque/MLPorDia",
-                json=payload,
-                headers={'Content-Type': 'application/json'},
-                timeout=2.0
-            )
-            used = self.volume_at_trajectory_start - self.current_volume
-            self.get_logger().info(f"💧 Tank: {payload['ML_Al_Inicio']} → {payload['ML_Al_Final']} (used: {used:.0f})")
-        except Exception as e:
-            self.get_logger().error(f"Tank error: {e}")
+            endpoint, payload = task
+            url = f"{self.base_url}{endpoint}"
+
+            try:
+                response = requests.post(url, json=payload, timeout=self.api_timeout)
+                if response.status_code not in [200, 201, 204]:
+                    self.get_logger().warn(f"API {response.status_code}: {endpoint}")
+            except requests.exceptions.Timeout:
+                self.get_logger().warn(f"Timeout: {endpoint}")
+            except requests.exceptions.ConnectionError:
+                self.api_available = False
+            except Exception as e:
+                self.get_logger().error(f"Error: {e}")
+
+            self.api_queue.task_done()
+
+    def _queue_api(self, endpoint: str, payload: dict):
+        self.api_queue.put((endpoint, payload))
+
+    # ==================== STATUS ====================
 
     def _publish_status(self):
+        if self.shutting_down:
+            return
+
+        with self.lock:
+            state = self.trajectory_state.name
+            confirmed = "✓" if self.trajectory_confirmed else "✗"
+            vol = self.current_volume
+            imu = "✓" if self.bias_calibrated else f"{self.bias_samples}/{self.calibration_samples}"
+            api = "✓" if self.api_available else "✗"
+            x = self.position_x * 100
+            y = self.position_y * 100
+
         msg = String()
-        msg.data = f"State:{self.trajectory_state.name} Pos:({self.position_x:.2f},{self.position_y:.2f})"
+        msg.data = f"[{state}:{confirmed}] IMU:{imu} API:{api} Tank:{vol:.0f}ml ({x:.1f},{y:.1f})cm"
         self.status_pub.publish(msg)
+        self.get_logger().info(msg.data)
+
+    def destroy_node(self):
+        self.shutting_down = True
+        if self.trajectory_confirmed:
+            try:
+                requests.post(f"{self.base_url}/Sensores/CloseTrajectory", json={}, timeout=2.0)
+            except:
+                pass
+        self.api_queue.put(None)
+        self.api_thread.join(timeout=1.0)
+        super().destroy_node()
 
 
 def main(args=None):
@@ -319,10 +421,11 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Shutting down...")
+        pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
