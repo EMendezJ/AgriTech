@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 """
-AgriTech Sensor Logger Node v2.7
+AgriTech Sensor Logger Node v2.8
 ================================
-- Detección de movimiento mejorada
-- Umbral adaptativo
-- Posiciones X,Y
-- Consumo de tanque
-- Color HSV cuando se corta planta
+- Sube HSV en cada chequeo de planta (no solo cortes)
+- FueCortada indica si fue madura o no
 """
 
 import rclpy
@@ -15,7 +12,6 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, String, Bool, Int32
 import requests
-from datetime import datetime
 from enum import Enum
 import threading
 from queue import Queue
@@ -35,8 +31,8 @@ class SensorLoggerNode(Node):
         # ==================== PARAMETERS ====================
         self.declare_parameter('api_host', '172.20.10.2')
         self.declare_parameter('api_port', 5074)
-        self.declare_parameter('start_threshold', 2.0)      # Para INICIAR trayectoria
-        self.declare_parameter('continue_threshold', 0.5)   # Para CONTINUAR moviéndose
+        self.declare_parameter('start_threshold', 0.3)
+        self.declare_parameter('continue_threshold', 0.15)
         self.declare_parameter('stop_timeout', 3.0)
         self.declare_parameter('min_trajectory_duration', 2.0)
         self.declare_parameter('api_timeout', 5.0)
@@ -61,7 +57,7 @@ class SensorLoggerNode(Node):
         self.trajectory_start_time = None
         self.last_movement_time = None
 
-        # IMU Integration
+        # IMU
         self.position_x = 0.0
         self.position_y = 0.0
         self.velocity_x = 0.0
@@ -77,11 +73,11 @@ class SensorLoggerNode(Node):
         self.volume_at_trajectory_start = None
         self.current_volume = 0.0
 
-        # HSV and plant
+        # HSV and plant - para cada chequeo
         self.current_hsv = {'H': 0, 'S': 0, 'V': 0}
         self.nombre_planta = "Planta_Default"
 
-        # Control flags
+        # Control
         self.shutting_down = False
         self.api_available = True
         self.lock = threading.Lock()
@@ -105,7 +101,8 @@ class SensorLoggerNode(Node):
         self.create_subscription(Int32, '/hsv_s', self.s_callback, 10)
         self.create_subscription(Int32, '/hsv_v', self.v_callback, 10)
         self.create_subscription(String, '/plant_name', self.plant_name_callback, 10)
-        self.create_subscription(Bool, '/cut_plant', self.cut_callback, 10)
+        self.create_subscription(Bool, '/plant_checked', self.plant_checked_callback, 10)  # Cada chequeo
+        self.create_subscription(Bool, '/cut_plant', self.cut_callback, 10)  # Solo cortes (opcional)
 
         # ==================== PUBLISHER ====================
         self.status_pub = self.create_publisher(String, '/agritech/status', 10)
@@ -117,16 +114,12 @@ class SensorLoggerNode(Node):
 
         self._log_startup()
 
-    # ==================== STARTUP ====================
-
     def _log_startup(self):
         self.get_logger().info("=" * 55)
-        self.get_logger().info("   📊 AgriTech Sensor Logger v2.7")
+        self.get_logger().info("   📊 AgriTech Sensor Logger v2.8")
         self.get_logger().info("=" * 55)
         self.get_logger().info(f"API: {self.base_url}")
-        self.get_logger().info(f"Start threshold: {self.start_threshold} m/s²")
-        self.get_logger().info(f"Continue threshold: {self.continue_threshold} m/s²")
-        self.get_logger().info("Calibrating IMU (keep robot still)...")
+        self.get_logger().info("Calibrating IMU...")
 
     def _check_api_health(self):
         try:
@@ -139,52 +132,40 @@ class SensorLoggerNode(Node):
                 self.get_logger().warn("⚠️ API not reachable")
             self.api_available = False
 
-    # ==================== IMU CALLBACK ====================
+    # ==================== IMU ====================
 
     def imu_callback(self, msg: Imu):
         now_sec = time.time()
         ax = msg.linear_acceleration.x
         ay = msg.linear_acceleration.y
 
-        # Calibración rápida
         if not self.bias_calibrated:
             alpha = 0.1 if self.bias_samples < 20 else 0.05
             self.accel_bias_x = self.accel_bias_x * (1 - alpha) + ax * alpha
             self.accel_bias_y = self.accel_bias_y * (1 - alpha) + ay * alpha
             self.bias_samples += 1
-            
             if self.bias_samples >= self.calibration_samples:
                 self.bias_calibrated = True
-                self.get_logger().info(
-                    f"✅ IMU calibrated: bias=({self.accel_bias_x:.3f}, {self.accel_bias_y:.3f})"
-                )
+                self.get_logger().info(f"✅ IMU calibrated")
             return
 
-        # Corregir con bias
         ax_corrected = ax - self.accel_bias_x
         ay_corrected = ay - self.accel_bias_y
-        
-        # Magnitud total de aceleración
         accel_magnitude = (ax_corrected**2 + ay_corrected**2)**0.5
 
         with self.lock:
             current_state = self.trajectory_state
-            
+
             if current_state == TrajectoryState.IDLE:
-                # Umbral ALTO para iniciar (evitar falsos positivos)
                 if accel_magnitude > self.start_threshold:
-                    self.get_logger().info(f"📍 Movement detected: {accel_magnitude:.2f} m/s²")
                     self._start_trajectory()
                     self.last_movement_time = now_sec
-                    
             elif current_state in [TrajectoryState.MOVING, TrajectoryState.STOPPING]:
-                # Umbral BAJO para continuar (detectar movimiento suave)
                 if accel_magnitude > self.continue_threshold:
                     self.last_movement_time = now_sec
                     if current_state == TrajectoryState.STOPPING:
                         self.trajectory_state = TrajectoryState.MOVING
 
-                # Actualizar posición si confirmado
                 if self.trajectory_confirmed:
                     self._update_position(ax_corrected, ay_corrected, now_sec)
 
@@ -199,24 +180,18 @@ class SensorLoggerNode(Node):
         if dt > 0.1 or dt < 0.001:
             return
 
-        # Dead zone
         if abs(ax) < 0.15:
             ax = 0.0
         if abs(ay) < 0.15:
             ay = 0.0
 
-        # Integrar
         self.velocity_x += ax * dt
         self.velocity_y += ay * dt
-
-        # Damping
         self.velocity_x *= 0.95
         self.velocity_y *= 0.95
-
         self.position_x += self.velocity_x * dt
         self.position_y += self.velocity_y * dt
 
-        # Postear periódicamente
         if now_sec - self.last_position_post >= self.position_post_interval:
             self._post_position()
             self.last_position_post = now_sec
@@ -224,10 +199,8 @@ class SensorLoggerNode(Node):
     def _post_position(self):
         if not self.trajectory_confirmed:
             return
-
         x_cm = round(self.position_x * 100, 2)
         y_cm = round(self.position_y * 100, 2)
-
         self._queue_api("/Sensores/PostPosition", {"X": x_cm, "Y": y_cm})
 
     # ==================== SENSOR CALLBACKS ====================
@@ -238,7 +211,6 @@ class SensorLoggerNode(Node):
             if self.trajectory_state == TrajectoryState.MOVING and \
                self.volume_at_trajectory_start is None:
                 self.volume_at_trajectory_start = msg.data
-                self.get_logger().info(f"💧 Tank start: {msg.data:.0f} ml")
 
     def h_callback(self, msg: Int32):
         with self.lock:
@@ -256,20 +228,32 @@ class SensorLoggerNode(Node):
         with self.lock:
             self.nombre_planta = msg.data
 
-    def cut_callback(self, msg: Bool):
-        if msg.data:
-            with self.lock:
-                hsv = self.current_hsv.copy()
-                nombre = self.nombre_planta
+    def plant_checked_callback(self, msg: Bool):
+        """
+        Se llama en CADA chequeo de planta.
+        msg.data = True si está madura (será cortada)
+        msg.data = False si no está madura
+        """
+        with self.lock:
+            hsv = self.current_hsv.copy()
+            nombre = self.nombre_planta
+            fue_cortada = msg.data  # True = madura/cortada, False = no madura
 
-            self._queue_api("/Sensores/color", {
-                "NombrePlanta": nombre,
-                "H": hsv['H'],
-                "S": hsv['S'],
-                "V": hsv['V'],
-                "FueCortada": True
-            })
-            self.get_logger().info(f"🔪 Cut: {nombre} HSV({hsv['H']},{hsv['S']},{hsv['V']})")
+        self._queue_api("/Sensores/color", {
+            "NombrePlanta": nombre,
+            "H": hsv['H'],
+            "S": hsv['S'],
+            "V": hsv['V'],
+            "FueCortada": fue_cortada
+        })
+
+        status = "MADURA ✂️" if fue_cortada else "NO MADURA ⏭️"
+        self.get_logger().info(f"📤 {nombre} HSV({hsv['H']},{hsv['S']},{hsv['V']}) - {status}")
+
+    def cut_callback(self, msg: Bool):
+        """Solo para logging adicional cuando hay corte físico"""
+        if msg.data:
+            self.get_logger().info("🔪 Corte físico ejecutado")
 
     # ==================== STATE MACHINE ====================
 
@@ -281,21 +265,19 @@ class SensorLoggerNode(Node):
 
         with self.lock:
             if self.trajectory_state == TrajectoryState.MOVING:
-                time_since_movement = now_sec - self.last_movement_time if self.last_movement_time else 0
-                if time_since_movement > self.stop_timeout / 2:
+                time_since = now_sec - self.last_movement_time if self.last_movement_time else 0
+                if time_since > self.stop_timeout / 2:
                     self.trajectory_state = TrajectoryState.STOPPING
-                    self.get_logger().info("⏸️ Slowing down...")
 
             elif self.trajectory_state == TrajectoryState.STOPPING:
-                time_since_movement = now_sec - self.last_movement_time if self.last_movement_time else 0
-                if time_since_movement > self.stop_timeout:
+                time_since = now_sec - self.last_movement_time if self.last_movement_time else 0
+                if time_since > self.stop_timeout:
                     self._end_trajectory()
 
-    # ==================== TRAJECTORY MANAGEMENT ====================
+    # ==================== TRAJECTORY ====================
 
     def _start_trajectory(self):
         if not self.api_available:
-            self.get_logger().warn("API not available")
             return
 
         self.trajectory_state = TrajectoryState.MOVING
@@ -318,11 +300,10 @@ class SensorLoggerNode(Node):
                 self.trajectory_confirmed = True
                 self.get_logger().info("🚀 TRAJECTORY STARTED")
             else:
-                self.get_logger().error(f"❌ StartTrajectory failed: {response.status_code}")
                 self.trajectory_state = TrajectoryState.IDLE
                 self.trajectory_confirmed = False
         except Exception as e:
-            self.get_logger().error(f"❌ StartTrajectory error: {e}")
+            self.get_logger().error(f"StartTrajectory error: {e}")
             self.trajectory_state = TrajectoryState.IDLE
             self.trajectory_confirmed = False
 
@@ -330,17 +311,13 @@ class SensorLoggerNode(Node):
         duration = time.time() - self.trajectory_start_time if self.trajectory_start_time else 0
 
         if duration < self.min_trajectory_duration:
-            self.get_logger().info(f"⏭️ Too short ({duration:.1f}s), discarding")
             self.trajectory_state = TrajectoryState.IDLE
             self.trajectory_confirmed = False
             return
 
         if self.trajectory_confirmed:
             self._queue_api("/Sensores/CloseTrajectory", {})
-            
-            x_cm = round(self.position_x * 100, 1)
-            y_cm = round(self.position_y * 100, 1)
-            self.get_logger().info(f"🏁 TRAJECTORY ENDED ({duration:.1f}s) Final:({x_cm},{y_cm})cm")
+            self.get_logger().info(f"🏁 TRAJECTORY ENDED ({duration:.1f}s)")
 
             if self.volume_at_trajectory_start is not None and self.current_volume >= 0:
                 used = self.volume_at_trajectory_start - self.current_volume
@@ -349,7 +326,6 @@ class SensorLoggerNode(Node):
                         "ML_Al_Inicio": self.volume_at_trajectory_start,
                         "ML_Al_Final": self.current_volume
                     })
-                    self.get_logger().info(f"💧 Used: {used:.0f} ml")
 
         self.trajectory_state = TrajectoryState.IDLE
         self.trajectory_confirmed = False
@@ -392,14 +368,11 @@ class SensorLoggerNode(Node):
         with self.lock:
             state = self.trajectory_state.name
             confirmed = "✓" if self.trajectory_confirmed else "✗"
-            vol = self.current_volume
             imu = "✓" if self.bias_calibrated else f"{self.bias_samples}/{self.calibration_samples}"
             api = "✓" if self.api_available else "✗"
-            x = self.position_x * 100
-            y = self.position_y * 100
 
         msg = String()
-        msg.data = f"[{state}:{confirmed}] IMU:{imu} API:{api} Tank:{vol:.0f}ml ({x:.1f},{y:.1f})cm"
+        msg.data = f"[{state}:{confirmed}] IMU:{imu} API:{api}"
         self.status_pub.publish(msg)
         self.get_logger().info(msg.data)
 
