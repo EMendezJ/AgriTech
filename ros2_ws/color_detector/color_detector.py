@@ -49,7 +49,7 @@ class ColorDetectorROS2(Node):
         # ==================== STATE ====================
         self.plants_checked = 0
         self.plants_cut = 0
-        self.recorrido_activo = False  # ← Cambio: inicia INACTIVO
+        self.recorrido_activo = False  # ← INACTIVO hasta recibir señal
         self.is_cutting = False
         self.last_detection_time = 0.0
 
@@ -59,7 +59,7 @@ class ColorDetectorROS2(Node):
 
         # ==================== SUBSCRIBERS ====================
         self.create_subscription(Image, "/video_source/raw", self.image_callback, 10)
-        self.create_subscription(Bool, "/agritech/start_harvest", self.start_callback, 10)  # ← Nuevo
+        self.create_subscription(Bool, "/agritech/start_harvest", self.start_callback, 10)
 
         # ==================== PUBLISHERS ====================
         self.h_pub = self.create_publisher(Int32, "/hsv_h", 10)
@@ -70,11 +70,11 @@ class ColorDetectorROS2(Node):
         self.cut_pub = self.create_publisher(Bool, "/cut_plant", 10)
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
         self.servo_pub = self.create_publisher(Int32, "/servo_angle", 10)
-        self.status_pub = self.create_publisher(String, "/agritech/harvest_status", 10)  # ← Nuevo
+        self.status_pub = self.create_publisher(String, "/agritech/harvest_status", 10)
 
         # ==================== TIMERS ====================
         self.movement_timer = self.create_timer(0.1, self.control_loop)
-        self.create_timer(5.0, self.publish_status)
+        self.create_timer(2.0, self.publish_status)
 
         self._log_startup()
 
@@ -85,12 +85,14 @@ class ColorDetectorROS2(Node):
         self.get_logger().info(f"Plantas a revisar: {self.TOTAL_PLANTS}")
         self.get_logger().info(f"HSV Rango: H({self.H_LOWER}-{self.H_UPPER}) "
                                f"S({self.S_LOWER}-{self.S_UPPER}) V({self.V_LOWER}-{self.V_UPPER})")
+        self.get_logger().info(f"Servo: corte={self.SERVO_CUT_ANGLE}° reposo={self.SERVO_REST_ANGLE}°")
         self.get_logger().info("Waiting for /agritech/start_harvest...")
         self.get_logger().info("=" * 55)
 
     # ==================== START CALLBACK ====================
 
     def start_callback(self, msg: Bool):
+        """Espera señal de inicio del mission_controller"""
         if msg.data and not self.recorrido_activo:
             self.get_logger().info("🚀 Harvest started!")
             self.recorrido_activo = True
@@ -189,6 +191,7 @@ class ColorDetectorROS2(Node):
         if not fruit_detected:
             return
 
+        # ===== FRUTA DETECTADA =====
         self.last_detection_time = current_time
         self.plants_checked += 1
         plant_number = self.plants_checked
@@ -203,14 +206,18 @@ class ColorDetectorROS2(Node):
         s_val = int(mean_hsv[1])
         v_val = int(mean_hsv[2])
 
+        # Publicar nombre
         name_msg = String()
         name_msg.data = plant_name
         self.name_pub.publish(name_msg)
 
+        # Publicar HSV
         self.publish_hsv(h_val, s_val, v_val)
 
+        # Verificar madurez
         is_ripe = self.is_hsv_in_range(h_val, s_val, v_val)
 
+        # Publicar chequeo (para sensor_logger)
         check_msg = Bool()
         check_msg.data = is_ripe
         self.check_pub.publish(check_msg)
@@ -227,6 +234,7 @@ class ColorDetectorROS2(Node):
                 f"HSV({h_val},{s_val},{v_val}) - NO MADURA"
             )
 
+        # Verificar si terminó
         if self.plants_checked >= self.TOTAL_PLANTS:
             self.finish_recorrido()
 
@@ -264,7 +272,7 @@ class ColorDetectorROS2(Node):
         self.get_logger().info(f"   ⏭️  Ignoradas: {self.plants_checked - self.plants_cut}")
         self.get_logger().info("=" * 55)
 
-        # Publicar que terminó para el mission_controller
+        # Publicar TERMINADO para mission_controller
         status_msg = String()
         status_msg.data = "TERMINADO"
         self.status_pub.publish(status_msg)
@@ -273,8 +281,10 @@ class ColorDetectorROS2(Node):
         msg = String()
         if self.recorrido_activo:
             msg.data = f"[HARVEST] {self.plants_checked}/{self.TOTAL_PLANTS} - Cut: {self.plants_cut}"
+        elif self.plants_checked > 0:
+            msg.data = "TERMINADO"
         else:
-            msg.data = "[HARVEST] IDLE"
+            msg.data = "[HARVEST] IDLE - Waiting for start signal"
         self.status_pub.publish(msg)
 
 

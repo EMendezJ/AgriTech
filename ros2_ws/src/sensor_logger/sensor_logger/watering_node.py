@@ -253,7 +253,7 @@ class WateringNode(Node):
 
         # Activar bomba
         pump_msg = Bool()
-        pump_msg.data = True
+        pump_msg.data = False
         self.pump_pub.publish(pump_msg)
         self.get_logger().info(f"   💦 Pump ON for {self.watering_duration}s...")
 
@@ -264,7 +264,7 @@ class WateringNode(Node):
         """Detener riego y continuar a la siguiente planta."""
         # Apagar bomba
         pump_msg = Bool()
-        pump_msg.data = False
+        pump_msg.data = True
         self.pump_pub.publish(pump_msg)
         self.get_logger().info("   💦 Pump OFF")
 
