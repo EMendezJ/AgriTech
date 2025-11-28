@@ -21,7 +21,7 @@ class ColorDetectorROS2(Node):
         self.declare_parameter('s_upper', 255)
         self.declare_parameter('v_upper', 255)
         self.declare_parameter('min_area', 500)
-        self.declare_parameter('plant_name', 'Tomate')
+        self.declare_parameter('plant_base_name', 'Tomate')  # Nombre base
         self.declare_parameter('total_plants', 4)
         self.declare_parameter('robot_speed', 0.01)
         self.declare_parameter('backup_speed', -0.005)
@@ -37,7 +37,7 @@ class ColorDetectorROS2(Node):
         self.S_UPPER = self.get_parameter('s_upper').value
         self.V_UPPER = self.get_parameter('v_upper').value
         self.MIN_CONTOUR_AREA = self.get_parameter('min_area').value
-        self.plant_name_base = self.get_parameter('plant_name').value
+        self.PLANT_BASE_NAME = self.get_parameter('plant_base_name').value
         self.TOTAL_PLANTS = self.get_parameter('total_plants').value
         self.ROBOT_SPEED = self.get_parameter('robot_speed').value
         self.BACKUP_SPEED = self.get_parameter('backup_speed').value
@@ -49,7 +49,7 @@ class ColorDetectorROS2(Node):
         # ==================== STATE ====================
         self.plants_checked = 0
         self.plants_cut = 0
-        self.recorrido_activo = False  # ← INACTIVO hasta recibir señal
+        self.recorrido_activo = False
         self.is_cutting = False
         self.last_detection_time = 0.0
 
@@ -80,10 +80,10 @@ class ColorDetectorROS2(Node):
 
     def _log_startup(self):
         self.get_logger().info("=" * 55)
-        self.get_logger().info("   🌱 AgriTech Color Detector v3.2")
+        self.get_logger().info("   🌱 AgriTech Color Detector v3.3")
         self.get_logger().info("=" * 55)
-        self.get_logger().info(f"Plantas a revisar: {self.TOTAL_PLANTS}")
-        self.get_logger().info(f"HSV Rango: H({self.H_LOWER}-{self.H_UPPER}) "
+        self.get_logger().info(f"Plantas: {self.PLANT_BASE_NAME}1 - {self.PLANT_BASE_NAME}{self.TOTAL_PLANTS}")
+        self.get_logger().info(f"HSV Maduro: H({self.H_LOWER}-{self.H_UPPER}) "
                                f"S({self.S_LOWER}-{self.S_UPPER}) V({self.V_LOWER}-{self.V_UPPER})")
         self.get_logger().info(f"Servo: corte={self.SERVO_CUT_ANGLE}° reposo={self.SERVO_REST_ANGLE}°")
         self.get_logger().info("Waiting for /agritech/start_harvest...")
@@ -92,7 +92,6 @@ class ColorDetectorROS2(Node):
     # ==================== START CALLBACK ====================
 
     def start_callback(self, msg: Bool):
-        """Espera señal de inicio del mission_controller"""
         if msg.data and not self.recorrido_activo:
             self.get_logger().info("🚀 Harvest started!")
             self.recorrido_activo = True
@@ -194,8 +193,9 @@ class ColorDetectorROS2(Node):
         # ===== FRUTA DETECTADA =====
         self.last_detection_time = current_time
         self.plants_checked += 1
-        plant_number = self.plants_checked
-        plant_name = f"{self.plant_name_base}_{plant_number}"
+        
+        # Nombre: Tomate1, Tomate2, Tomate3, Tomate4
+        plant_name = f"{self.PLANT_BASE_NAME}{self.plants_checked}"
 
         roi_hsv = hsv_image[y1:y2, x1:x2]
         if roi_hsv.size == 0:
@@ -214,27 +214,26 @@ class ColorDetectorROS2(Node):
         # Publicar HSV
         self.publish_hsv(h_val, s_val, v_val)
 
-        # Verificar madurez
+        # Verificar madurez (mismo rango HSV para todas)
         is_ripe = self.is_hsv_in_range(h_val, s_val, v_val)
 
-        # Publicar chequeo (para sensor_logger)
+        # Publicar chequeo
         check_msg = Bool()
         check_msg.data = is_ripe
         self.check_pub.publish(check_msg)
 
         if is_ripe:
             self.get_logger().info(
-                f"🍅 [{plant_number}/{self.TOTAL_PLANTS}] {plant_name} "
+                f"🍅 [{self.plants_checked}/{self.TOTAL_PLANTS}] {plant_name} "
                 f"HSV({h_val},{s_val},{v_val}) - MADURA → CORTANDO"
             )
             self.execute_cut_sequence()
         else:
             self.get_logger().info(
-                f"🌿 [{plant_number}/{self.TOTAL_PLANTS}] {plant_name} "
+                f"🌿 [{self.plants_checked}/{self.TOTAL_PLANTS}] {plant_name} "
                 f"HSV({h_val},{s_val},{v_val}) - NO MADURA"
             )
 
-        # Verificar si terminó
         if self.plants_checked >= self.TOTAL_PLANTS:
             self.finish_recorrido()
 
@@ -272,7 +271,6 @@ class ColorDetectorROS2(Node):
         self.get_logger().info(f"   ⏭️  Ignoradas: {self.plants_checked - self.plants_cut}")
         self.get_logger().info("=" * 55)
 
-        # Publicar TERMINADO para mission_controller
         status_msg = String()
         status_msg.data = "TERMINADO"
         self.status_pub.publish(status_msg)
@@ -284,7 +282,7 @@ class ColorDetectorROS2(Node):
         elif self.plants_checked > 0:
             msg.data = "TERMINADO"
         else:
-            msg.data = "[HARVEST] IDLE - Waiting for start signal"
+            msg.data = "[HARVEST] IDLE"
         self.status_pub.publish(msg)
 
 
