@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 """
-AgriTech Watering Node v1.0
+AgriTech Watering Node v1.1
 ===========================
 Navega a plantas que necesitan agua y activa la bomba.
-
-Flujo:
-1. GET /Sensores/get/humedad/necesitan-agua/{umbral}
-2. Ordenar por ID de planta
-3. Navegar a cada planta (avanzar hasta detectar marcador/planta)
-4. Activar bomba por X segundos
-5. Continuar a la siguiente
+Espera señal de /agritech/start_watering para iniciar.
 """
 
 import rclpy
@@ -42,13 +36,13 @@ class WateringNode(Node):
         # ==================== PARAMETERS ====================
         self.declare_parameter('api_host', '172.20.10.2')
         self.declare_parameter('api_port', 5074)
-        self.declare_parameter('humidity_threshold', 50)  # Umbral de humedad
-        self.declare_parameter('watering_duration', 3.0)  # Segundos de riego por planta
+        self.declare_parameter('humidity_threshold', 50)
+        self.declare_parameter('watering_duration', 3.0)
         self.declare_parameter('robot_speed', 0.015)
         self.declare_parameter('plant_detection_cooldown', 2.0)
         self.declare_parameter('min_contour_area', 500)
-        
-        # HSV para detectar plantas/macetas (verde)
+
+        # HSV para detectar plantas (verde)
         self.declare_parameter('plant_h_lower', 35)
         self.declare_parameter('plant_h_upper', 85)
         self.declare_parameter('plant_s_lower', 40)
@@ -75,10 +69,10 @@ class WateringNode(Node):
 
         # ==================== STATE ====================
         self.state = WateringState.IDLE
-        self.plants_to_water = []  # Lista de IDs de plantas que necesitan agua
+        self.plants_to_water = []
         self.current_plant_index = 0
         self.current_plant_id = None
-        self.plants_detected = 0  # Contador de plantas detectadas durante navegación
+        self.plants_detected = 0
         self.plants_watered = 0
         self.last_detection_time = 0.0
         self.is_watering = False
@@ -105,13 +99,13 @@ class WateringNode(Node):
 
         # ==================== TIMERS ====================
         self.create_timer(0.1, self.control_loop)
-        self.create_timer(5.0, self.publish_status)
+        self.create_timer(2.0, self.publish_status)
 
         self._log_startup()
 
     def _log_startup(self):
         self.get_logger().info("=" * 55)
-        self.get_logger().info("   💧 AgriTech Watering Node v1.0")
+        self.get_logger().info("   💧 AgriTech Watering Node v1.1")
         self.get_logger().info("=" * 55)
         self.get_logger().info(f"API: {self.base_url}")
         self.get_logger().info(f"Humidity threshold: {self.humidity_threshold}%")
@@ -122,65 +116,75 @@ class WateringNode(Node):
     # ==================== START CALLBACK ====================
 
     def start_callback(self, msg: Bool):
+        """Espera señal de inicio del mission_controller"""
         if msg.data and self.state == WateringState.IDLE:
-            self.get_logger().info("🚀 Starting watering mission...")
+            self.get_logger().info("🚀 Watering mission started!")
             self.state = WateringState.FETCHING_PLANTS
+            self._reset_state()
             self._fetch_plants_needing_water()
+
+    def _reset_state(self):
+        """Reiniciar estado para nueva misión"""
+        self.plants_to_water = []
+        self.current_plant_index = 0
+        self.current_plant_id = None
+        self.plants_detected = 0
+        self.plants_watered = 0
+        self.last_detection_time = 0.0
+        self.is_watering = False
 
     def _fetch_plants_needing_water(self):
         """GET plantas que necesitan agua."""
         try:
             url = f"{self.base_url}/Sensores/get/humedad/necesitan-agua/{self.humidity_threshold}"
+            self.get_logger().info(f"📡 Fetching from: {url}")
+            
             response = requests.get(url, timeout=5.0)
 
             if response.status_code == 200:
                 data = response.json()
-                
+
                 # Extraer IDs únicos ordenados
                 plant_ids = sorted(set(item['iD_Planta'] for item in data))
-                
+
                 if plant_ids:
                     self.plants_to_water = plant_ids
                     self.current_plant_index = 0
-                    self.plants_detected = 0
-                    self.plants_watered = 0
                     
                     self.get_logger().info(f"📋 Found {len(plant_ids)} plants needing water: {plant_ids}")
                     self.state = WateringState.NAVIGATING
                     self._set_target_plant()
                 else:
                     self.get_logger().info("✅ All plants are well watered!")
-                    self.state = WateringState.FINISHED
                     self._finish_mission()
             else:
                 self.get_logger().error(f"API error: {response.status_code}")
-                self.state = WateringState.IDLE
+                self._finish_mission()
 
         except Exception as e:
             self.get_logger().error(f"Failed to fetch plants: {e}")
-            self.state = WateringState.IDLE
+            self._finish_mission()
 
     def _set_target_plant(self):
         """Establecer la siguiente planta objetivo."""
         if self.current_plant_index < len(self.plants_to_water):
             self.current_plant_id = self.plants_to_water[self.current_plant_index]
-            self.get_logger().info(f"🎯 Target: Plant {self.current_plant_id} "
-                                   f"({self.current_plant_index + 1}/{len(self.plants_to_water)})")
+            self.get_logger().info(
+                f"🎯 Target: Plant {self.current_plant_id} "
+                f"({self.current_plant_index + 1}/{len(self.plants_to_water)})"
+            )
         else:
-            self.state = WateringState.FINISHED
             self._finish_mission()
 
     # ==================== CONTROL LOOP ====================
 
     def control_loop(self):
         if self.state == WateringState.NAVIGATING and not self.is_watering:
-            # Avanzar lentamente
             twist = Twist()
             twist.linear.x = self.robot_speed
             self.cmd_pub.publish(twist)
 
         elif self.state == WateringState.WATERING:
-            # Detenerse durante riego
             self._stop_robot()
 
         elif self.state in [WateringState.IDLE, WateringState.FINISHED]:
@@ -217,7 +221,6 @@ class WateringNode(Node):
         roi = cv_image[y1:y2, x1:x2]
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
-        # Máscara para plantas (verde)
         lower = np.array([self.plant_h_lower, self.plant_s_lower, self.plant_v_lower])
         upper = np.array([self.plant_h_upper, self.plant_s_upper, self.plant_v_upper])
         mask = cv2.inRange(hsv, lower, upper)
@@ -229,15 +232,15 @@ class WateringNode(Node):
         if contours:
             largest = max(contours, key=cv2.contourArea)
             if cv2.contourArea(largest) > self.min_contour_area:
-                # ¡Planta detectada!
                 self.last_detection_time = current_time
                 self.plants_detected += 1
 
                 self.get_logger().info(f"🌱 Detected plant #{self.plants_detected}")
 
-                # Verificar si es la planta que buscamos
                 if self.plants_detected == self.current_plant_id:
-                    self.get_logger().info(f"💧 Found target plant {self.current_plant_id}! Starting watering...")
+                    self.get_logger().info(
+                        f"💧 Found target plant {self.current_plant_id}! Watering..."
+                    )
                     self._start_watering()
 
     # ==================== WATERING ====================
@@ -277,7 +280,6 @@ class WateringNode(Node):
             self.state = WateringState.NAVIGATING
             self._set_target_plant()
         else:
-            self.state = WateringState.FINISHED
             self._finish_mission()
 
     def _log_watering_to_api(self):
@@ -285,7 +287,7 @@ class WateringNode(Node):
         try:
             payload = {
                 "ID_Planta": self.current_plant_id,
-                "Humedad_Suelo": 100,  # Asumimos que después de regar está al 100%
+                "Humedad_Suelo": 100,
                 "Estado_Bomba": True
             }
             requests.post(
@@ -302,7 +304,7 @@ class WateringNode(Node):
     def _finish_mission(self):
         """Terminar misión de riego."""
         self._stop_robot()
-        
+
         # Asegurar bomba apagada
         pump_msg = Bool()
         pump_msg.data = False
@@ -316,22 +318,28 @@ class WateringNode(Node):
         self.get_logger().info(f"   💧 Plants watered: {self.plants_watered}")
         self.get_logger().info("=" * 55)
 
+        # Publicar que terminó para el mission_controller
+        status_msg = String()
+        status_msg.data = "COMPLETE"
+        self.status_pub.publish(status_msg)
+
         self.state = WateringState.IDLE
-        self.plants_to_water = []
-        self.current_plant_index = 0
 
     # ==================== STATUS ====================
 
     def publish_status(self):
         msg = String()
         if self.state == WateringState.NAVIGATING:
-            msg.data = f"[NAV] Target: Plant {self.current_plant_id}, Detected: {self.plants_detected}"
+            msg.data = f"[WATER] Target: Plant {self.current_plant_id}, Detected: {self.plants_detected}"
         elif self.state == WateringState.WATERING:
-            msg.data = f"[WATER] Plant {self.current_plant_id}"
+            msg.data = f"[WATER] Watering Plant {self.current_plant_id}"
+        elif self.state == WateringState.IDLE:
+            msg.data = "[WATER] IDLE - Waiting for start signal"
         else:
-            msg.data = f"[{self.state.name}]"
-        
+            msg.data = f"[WATER] {self.state.name}"
+
         self.status_pub.publish(msg)
+
         if self.state not in [WateringState.IDLE, WateringState.FINISHED]:
             self.get_logger().info(msg.data)
 

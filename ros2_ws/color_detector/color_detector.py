@@ -49,7 +49,7 @@ class ColorDetectorROS2(Node):
         # ==================== STATE ====================
         self.plants_checked = 0
         self.plants_cut = 0
-        self.recorrido_activo = True
+        self.recorrido_activo = False  # ← Cambio: inicia INACTIVO
         self.is_cutting = False
         self.last_detection_time = 0.0
 
@@ -58,19 +58,19 @@ class ColorDetectorROS2(Node):
         self.bridge = CvBridge()
 
         # ==================== SUBSCRIBERS ====================
-        self.image_sub = self.create_subscription(
-            Image, "/video_source/raw", self.image_callback, 10
-        )
+        self.create_subscription(Image, "/video_source/raw", self.image_callback, 10)
+        self.create_subscription(Bool, "/agritech/start_harvest", self.start_callback, 10)  # ← Nuevo
 
         # ==================== PUBLISHERS ====================
         self.h_pub = self.create_publisher(Int32, "/hsv_h", 10)
         self.s_pub = self.create_publisher(Int32, "/hsv_s", 10)
         self.v_pub = self.create_publisher(Int32, "/hsv_v", 10)
         self.name_pub = self.create_publisher(String, "/plant_name", 10)
-        self.check_pub = self.create_publisher(Bool, "/plant_checked", 10)  # Nuevo: cada chequeo
-        self.cut_pub = self.create_publisher(Bool, "/cut_plant", 10)        # Solo cuando corta
+        self.check_pub = self.create_publisher(Bool, "/plant_checked", 10)
+        self.cut_pub = self.create_publisher(Bool, "/cut_plant", 10)
         self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
         self.servo_pub = self.create_publisher(Int32, "/servo_angle", 10)
+        self.status_pub = self.create_publisher(String, "/agritech/harvest_status", 10)  # ← Nuevo
 
         # ==================== TIMERS ====================
         self.movement_timer = self.create_timer(0.1, self.control_loop)
@@ -80,13 +80,23 @@ class ColorDetectorROS2(Node):
 
     def _log_startup(self):
         self.get_logger().info("=" * 55)
-        self.get_logger().info("   🌱 AgriTech Color Detector v3.1")
+        self.get_logger().info("   🌱 AgriTech Color Detector v3.2")
         self.get_logger().info("=" * 55)
         self.get_logger().info(f"Plantas a revisar: {self.TOTAL_PLANTS}")
         self.get_logger().info(f"HSV Rango: H({self.H_LOWER}-{self.H_UPPER}) "
                                f"S({self.S_LOWER}-{self.S_UPPER}) V({self.V_LOWER}-{self.V_UPPER})")
-        self.get_logger().info(f"Servo: corte={self.SERVO_CUT_ANGLE}° reposo={self.SERVO_REST_ANGLE}°")
+        self.get_logger().info("Waiting for /agritech/start_harvest...")
         self.get_logger().info("=" * 55)
+
+    # ==================== START CALLBACK ====================
+
+    def start_callback(self, msg: Bool):
+        if msg.data and not self.recorrido_activo:
+            self.get_logger().info("🚀 Harvest started!")
+            self.recorrido_activo = True
+            self.plants_checked = 0
+            self.plants_cut = 0
+            self.last_detection_time = 0.0
 
     # ==================== CONTROL ====================
 
@@ -108,45 +118,29 @@ class ColorDetectorROS2(Node):
     # ==================== CUT SEQUENCE ====================
 
     def execute_cut_sequence(self):
-        """
-        Secuencia de corte:
-        1. Retroceso
-        2. Stop
-        3. Servo 150°
-        4. Esperar
-        5. Servo 0°
-        6. Continuar
-        """
         self.is_cutting = True
 
-        # 1. Retroceso
         self.get_logger().info("   ↩️ Retroceso...")
         self.publish_velocity(self.BACKUP_SPEED)
         time.sleep(0.3)
 
-        # 2. Stop
         self.get_logger().info("   ⏹️ Stop...")
         self.publish_velocity(0.0)
         time.sleep(0.2)
 
-        # 3. Servo corte
         self.get_logger().info(f"   🔪 Servo → {self.SERVO_CUT_ANGLE}°")
         self.publish_servo(self.SERVO_CUT_ANGLE)
 
-        # Publicar /cut_plant para registrar en API
         cut_msg = Bool()
         cut_msg.data = True
         self.cut_pub.publish(cut_msg)
 
-        # 4. Esperar
         time.sleep(self.CUT_DURATION)
 
-        # 5. Servo reset
         self.get_logger().info(f"   ↪️ Servo → {self.SERVO_REST_ANGLE}°")
         self.publish_servo(self.SERVO_REST_ANGLE)
         time.sleep(0.3)
 
-        # 6. Listo
         self.get_logger().info("   ✅ Corte completado")
         self.is_cutting = False
         self.plants_cut += 1
@@ -166,7 +160,6 @@ class ColorDetectorROS2(Node):
         self.frame_count += 1
         current_time = time.time()
 
-        # Cooldown
         if current_time - self.last_detection_time < self.DETECTION_COOLDOWN:
             return
 
@@ -179,7 +172,6 @@ class ColorDetectorROS2(Node):
 
         hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-        # Máscara
         lower_bound = np.array([self.H_LOWER, self.S_LOWER, self.V_LOWER])
         upper_bound = np.array([self.H_UPPER, self.S_UPPER, self.V_UPPER])
         mask = cv2.inRange(hsv_image, lower_bound, upper_bound)
@@ -188,7 +180,6 @@ class ColorDetectorROS2(Node):
 
         contours, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Detectar fruta
         fruit_detected = False
         if contours:
             largest_contour = max(contours, key=cv2.contourArea)
@@ -198,13 +189,11 @@ class ColorDetectorROS2(Node):
         if not fruit_detected:
             return
 
-        # ===== FRUTA DETECTADA =====
         self.last_detection_time = current_time
         self.plants_checked += 1
         plant_number = self.plants_checked
         plant_name = f"{self.plant_name_base}_{plant_number}"
 
-        # HSV promedio del ROI
         roi_hsv = hsv_image[y1:y2, x1:x2]
         if roi_hsv.size == 0:
             return
@@ -214,20 +203,16 @@ class ColorDetectorROS2(Node):
         s_val = int(mean_hsv[1])
         v_val = int(mean_hsv[2])
 
-        # 1. Publicar nombre de planta
         name_msg = String()
         name_msg.data = plant_name
         self.name_pub.publish(name_msg)
 
-        # 2. Publicar HSV
         self.publish_hsv(h_val, s_val, v_val)
 
-        # 3. Verificar si está en rango (madura)
         is_ripe = self.is_hsv_in_range(h_val, s_val, v_val)
 
-        # 4. Publicar /plant_checked SIEMPRE (para que sensor_logger suba a API)
         check_msg = Bool()
-        check_msg.data = is_ripe  # True si madura, False si no
+        check_msg.data = is_ripe
         self.check_pub.publish(check_msg)
 
         if is_ripe:
@@ -242,7 +227,6 @@ class ColorDetectorROS2(Node):
                 f"HSV({h_val},{s_val},{v_val}) - NO MADURA"
             )
 
-        # Verificar fin
         if self.plants_checked >= self.TOTAL_PLANTS:
             self.finish_recorrido()
 
@@ -270,7 +254,6 @@ class ColorDetectorROS2(Node):
     def finish_recorrido(self):
         self.recorrido_activo = False
         self.publish_velocity(0.0)
-        self.movement_timer.cancel()
 
         self.get_logger().info("")
         self.get_logger().info("=" * 55)
@@ -281,11 +264,18 @@ class ColorDetectorROS2(Node):
         self.get_logger().info(f"   ⏭️  Ignoradas: {self.plants_checked - self.plants_cut}")
         self.get_logger().info("=" * 55)
 
+        # Publicar que terminó para el mission_controller
+        status_msg = String()
+        status_msg.data = "TERMINADO"
+        self.status_pub.publish(status_msg)
+
     def publish_status(self):
-        if self.recorrido_activo and not self.is_cutting:
-            self.get_logger().info(
-                f"📊 [{self.plants_checked}/{self.TOTAL_PLANTS}] Cortadas: {self.plants_cut}"
-            )
+        msg = String()
+        if self.recorrido_activo:
+            msg.data = f"[HARVEST] {self.plants_checked}/{self.TOTAL_PLANTS} - Cut: {self.plants_cut}"
+        else:
+            msg.data = "[HARVEST] IDLE"
+        self.status_pub.publish(msg)
 
 
 def main(args=None):

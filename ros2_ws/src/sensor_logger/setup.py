@@ -11,7 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools', 'requests', 'opencv-python'],
+    install_requires=['setuptools', 'requests'],
     zip_safe=True,
     maintainer='AgriTech Team',
     maintainer_email='user@example.com',
@@ -21,6 +21,7 @@ setup(
         'console_scripts': [
             'sensor_logger = sensor_logger.sensor_logger_node:main',
             'watering = sensor_logger.watering_node:main',
+            'mission = sensor_logger.mission_controller:main',
         ],
     },
 )
