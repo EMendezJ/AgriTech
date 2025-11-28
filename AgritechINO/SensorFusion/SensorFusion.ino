@@ -48,11 +48,10 @@
 // ==================== CONFIGURATION ====================
 
 // WiFi Configuration - CHANGE THESE!
-#define WIFI_SSID "TU_RED_WIFI"
-#define WIFI_PASSWORD "TU_PASSWORD"
-
+#define WIFI_SSID "iPhone de Emiliano (2)"
+#define WIFI_PASSWORD "Emiliano1"
 // micro-ROS Agent Configuration (IP of Jetson Nano)
-#define AGENT_IP "192.168.1.100"
+#define AGENT_IP "172.20.10.2"
 #define AGENT_PORT 8888
 
 // Pin Definitions
@@ -525,11 +524,11 @@ void initializeHardware() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(BOMBA_PIN, OUTPUT);
-  digitalWrite(BOMBA_PIN, LOW);  // Ensure pump is OFF
+  digitalWrite(BOMBA_PIN, HIGH);  // Ensure pump is OFF
   
   // Initialize Servo
   servoMotor.attach(SERVO_PIN);
-  servoMotor.write(90);  // Neutral position
+  servoMotor.write(0);  // Neutral position
   
   delay(500);
   
